@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CelestiaCore:jar">
+    <output-path>$PROJECT_DIR$/../../../mcss/servers/Local(1.8.8)/plugins</output-path>
+    <root id="archive" name="CelestiaCore.jar">
+      <element id="module-output" name="CelestiaCore" />
+    </root>
+  </artifact>
+</component>
