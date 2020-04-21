@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.command;
 
-import me.nubdotdev.celestia.utils.CelestiaLogger;
+import me.nubdotdev.celestia.CelestiaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
@@ -13,11 +13,13 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public class CommandHandler {
 
-    private static Set<CelestiaCommand> commands = new HashSet<>();
-    private static SimpleCommandMap commandMap;
-    private static Map<String, Command> knownCommands;
+    private CelestiaPlugin plugin;
+    private Set<CelestiaCommand> commands = new HashSet<>();
+    private SimpleCommandMap commandMap;
+    private Map<String, Command> knownCommands;
 
-    static {
+    public CommandHandler(CelestiaPlugin plugin) {
+        this.plugin = plugin;
         try {
             final Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);
@@ -30,7 +32,7 @@ public class CommandHandler {
         }
     }
 
-    public static boolean register(CelestiaCommand command) {
+    public boolean register(CelestiaCommand command) {
         if (commandMap.register(command.getName(), command)) {
             commands.add(command);
             return true;
@@ -38,19 +40,19 @@ public class CommandHandler {
         return false;
     }
 
-    public static boolean unregister(CelestiaCommand command) {
+    public boolean unregister(CelestiaCommand command) {
         try {
             knownCommands.remove(command.getName());
             commands.remove(command);
             return true;
         } catch (Exception e) {
-            CelestiaLogger.warning("Failed to register command '" + command.getName() + "'");
+            plugin.getLog().warning("Failed to register command '" + command.getName() + "'");
             e.printStackTrace();
             return false;
         }
     }
 
-    public static Set<CelestiaCommand> getCommands() {
+    public Set<CelestiaCommand> getCommands() {
         return commands;
     }
 

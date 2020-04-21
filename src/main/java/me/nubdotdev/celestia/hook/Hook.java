@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.hook;
 
-import me.nubdotdev.celestia.utils.CelestiaLogger;
+import me.nubdotdev.celestia.CelestiaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -8,19 +8,19 @@ public class Hook {
 
     private String pluginName;
 
-    public Hook(String pluginName) {
+    public Hook(CelestiaPlugin plugin, String pluginName) {
         this.pluginName = pluginName;
         if (!isProvided())
-            CelestiaLogger.warning("WorldEdit dependency not found");
+            plugin.getLog().warning(pluginName + " dependency not found");
     }
 
     public boolean isProvided() {
         return Bukkit.getPluginManager().getPlugin(pluginName) != null;
     }
 
-    public Plugin getPlugin() {
+    public Plugin getPlugin() throws IllegalStateException {
         if (!isProvided())
-            throw new IllegalStateException("WorldEdit dependency not found");
+            throw new IllegalStateException(pluginName + " dependency not found");
         return Bukkit.getPluginManager().getPlugin(pluginName);
     }
 

@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.data.yaml;
 
-import me.nubdotdev.celestia.CelestiaCore;
+import me.nubdotdev.celestia.CelestiaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -9,15 +9,17 @@ import java.io.IOException;
 
 public class YamlConfig {
 
+    private CelestiaPlugin plugin;
     private File file;
     private FileConfiguration config;
 
-    public YamlConfig(File file) {
+    public YamlConfig(CelestiaPlugin plugin, File file) {
+        this.plugin = plugin;
         this.file = file;
         this.config = new YamlConfiguration();
         if (!file.exists()) {
             file.getParentFile().mkdirs();
-            CelestiaCore.getInst().saveResource(file.getPath(), false);
+            plugin.saveResource(file.getPath(), false);
         }
         try {
             config.load(file);
@@ -26,8 +28,8 @@ public class YamlConfig {
         }
     }
 
-    public YamlConfig(String path) {
-        this(new File(CelestiaCore.getInst().getDataFolder(), path));
+    public YamlConfig(CelestiaPlugin plugin, String path) {
+        this(plugin, new File(plugin.getDataFolder(), path));
     }
 
     public void save() {

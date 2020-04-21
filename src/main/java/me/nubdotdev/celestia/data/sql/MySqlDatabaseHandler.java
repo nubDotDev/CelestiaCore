@@ -1,5 +1,7 @@
 package me.nubdotdev.celestia.data.sql;
 
+import me.nubdotdev.celestia.CelestiaPlugin;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,9 +10,9 @@ public class MySqlDatabaseHandler extends SqlDatabaseHandler {
 
     private String host, database, user, password;
     private int port;
-    private Connection connection;
 
-    public MySqlDatabaseHandler(String host, String database, String user, String password, int port) {
+    public MySqlDatabaseHandler(CelestiaPlugin plugin, String host, String database, String user, String password, int port) {
+        super(plugin);
         this.host = host;
         this.database = database;
         this.user = user;

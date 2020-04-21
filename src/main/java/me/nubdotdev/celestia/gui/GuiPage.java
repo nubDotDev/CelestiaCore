@@ -9,7 +9,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PrimitiveIterator;
 import java.util.stream.IntStream;
 
 public class GuiPage implements InventoryHolder {

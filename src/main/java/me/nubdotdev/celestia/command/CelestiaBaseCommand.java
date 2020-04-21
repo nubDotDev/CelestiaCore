@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.command;
 
-import me.nubdotdev.celestia.utils.ConfigUtils;
+import me.nubdotdev.celestia.CelestiaPlugin;
 import me.nubdotdev.celestia.utils.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
@@ -14,17 +14,17 @@ public abstract class CelestiaBaseCommand extends CelestiaCommand {
     private String help;
     private List<CelestiaSubCommand> subCommands = new ArrayList<>();
 
-    protected CelestiaBaseCommand(String name) {
-        this(name, name + " base command", "/" + name, new ArrayList<>());
+    protected CelestiaBaseCommand(CelestiaPlugin plugin, String name) {
+        this(plugin, name, name + " base command", "/" + name, new ArrayList<>());
     }
 
-    protected CelestiaBaseCommand(String name, String description, String usage, List<String> aliases) {
-        super(name, description, usage, aliases);
+    protected CelestiaBaseCommand(CelestiaPlugin plugin, String name, String description, String usage, List<String> aliases) {
+        super(plugin, name, description, usage, aliases);
         this.help = buildHelp();
     }
 
-    protected CelestiaBaseCommand(String name, String description, String usage, List<String> aliases, String permission) {
-        this(name, description, usage, aliases);
+    protected CelestiaBaseCommand(CelestiaPlugin plugin, String name, String description, String usage, List<String> aliases, String permission) {
+        this(plugin, name, description, usage, aliases);
         setPermission(permission);
     }
 
@@ -34,7 +34,7 @@ public abstract class CelestiaBaseCommand extends CelestiaCommand {
             if (onCommand(sender, args))
                 return true;
         } else {
-            sender.sendMessage(ConfigUtils.getMsg("no-perms"));
+            sender.sendMessage(getPlugin().getMessages().getMessage("no-perms"));
             return false;
         }
         if (args.length > 0)
@@ -46,7 +46,7 @@ public abstract class CelestiaBaseCommand extends CelestiaCommand {
             if (help != null)
                 sender.sendMessage(help);
         } else if (getUsage() != null) {
-            sender.sendMessage(ConfigUtils.getMsg("usage")
+            sender.sendMessage(getPlugin().getMessages().getMessage("usage")
                     .replaceAll("%usage%", getUsage())
             );
         }
@@ -76,11 +76,11 @@ public abstract class CelestiaBaseCommand extends CelestiaCommand {
 
     public String buildHelp() {
         StringBuilder helpMsg = new StringBuilder();
-        helpMsg.append(ConfigUtils.getMsg("base-command-help.header") + "\n");
+        helpMsg.append(getPlugin().getMessages().getMessage("base-command-help.header") + "\n");
         // TODO EXPLAIN PLACEHOLDERS IN CONFIG
         if (subCommands != null) {
             for (CelestiaSubCommand sub : subCommands) {
-                helpMsg.append((ConfigUtils.getMsg("base-command-help.body") + "\n")
+                helpMsg.append((getPlugin().getMessages().getMessage("base-command-help.body") + "\n")
                         .replaceAll("%name%", sub.getName())
                         .replaceAll("%description%", sub.getDescription())
                         .replaceAll("%usage%", sub.getUsage())
@@ -89,7 +89,7 @@ public abstract class CelestiaBaseCommand extends CelestiaCommand {
                 );
             }
         }
-        helpMsg.append(ConfigUtils.getMsg("base-command-help.footer"));
+        helpMsg.append(getPlugin().getMessages().getMessage("base-command-help.footer"));
         return StringUtils.cc(helpMsg.toString())
                 .replaceAll("%title%", getName());
     }

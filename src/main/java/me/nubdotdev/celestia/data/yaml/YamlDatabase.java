@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.data.yaml;
 
-import me.nubdotdev.celestia.CelestiaCore;
+import me.nubdotdev.celestia.CelestiaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,18 +10,20 @@ import java.util.Objects;
 
 public class YamlDatabase {
 
+    private CelestiaPlugin plugin;
     private File file;
     private List<YamlConfig> configs = new ArrayList<>();
 
-    public YamlDatabase(File file) {
+    public YamlDatabase(CelestiaPlugin plugin, File file) {
+        this.plugin = plugin;
         this.file = file;
         if (file.exists()) {
             for (File f : Objects.requireNonNull(file.listFiles()))
                 if (f.getName().endsWith(".yml"))
-                    configs.add(new YamlConfig(f));
+                    configs.add(new YamlConfig(plugin, f));
         } else {
             file.getParentFile().mkdirs();
-            CelestiaCore.getInst().saveResource(file.getPath(), false);
+            plugin.saveResource(file.getPath(), false);
         }
     }
 
@@ -42,7 +44,7 @@ public class YamlDatabase {
     public void save(String name, YamlSerializable serializable) {
         YamlConfig config = getConfigByName(name);
         if (config == null) {
-            config = new YamlConfig(name);
+            config = new YamlConfig(plugin, name);
             configs.add(config);
         }
         Map<String, Object> serialized = serializable.serialize();

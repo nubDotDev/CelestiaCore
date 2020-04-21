@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.command;
 
-import me.nubdotdev.celestia.utils.ConfigUtils;
+import me.nubdotdev.celestia.CelestiaPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,28 +10,30 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class CelestiaCommand extends Command implements CelestiaCommandI {
+public abstract class CelestiaCommand extends Command implements ICelestiaCommand {
 
+    private CelestiaPlugin plugin;
     private int minArgs;
     private boolean requirePlayer;
 
-    protected CelestiaCommand(String name) {
-        this(name, "", "/", new ArrayList<>());
+    protected CelestiaCommand(CelestiaPlugin plugin, String name) {
+        this(plugin, name, "", "/", new ArrayList<>());
     }
 
-    protected CelestiaCommand(String name, String description, String usage, List<String> aliases) {
+    protected CelestiaCommand(CelestiaPlugin plugin, String name, String description, String usage, List<String> aliases) {
         super(name, description, usage, aliases);
+        this.plugin = plugin;
     }
 
-    protected CelestiaCommand(String name, String description, String usage, List<String> aliases, String permission) {
-        this(name, description, usage, aliases);
+    protected CelestiaCommand(CelestiaPlugin plugin, String name, String description, String usage, List<String> aliases, String permission) {
+        this(plugin, name, description, usage, aliases);
         setPermission(permission);
     }
 
     @Override
     public boolean execute(final CommandSender sender, final String label, final String[] args) {
         if (requirePlayer && !(sender instanceof Player)) {
-            sender.sendMessage(ConfigUtils.getMsg("not-player"));
+            sender.sendMessage(plugin.getMessages().getMessage("not-player"));
             return false;
         }
         if (hasPermission(sender)) {
@@ -39,17 +41,22 @@ public abstract class CelestiaCommand extends Command implements CelestiaCommand
                 return true;
             } else {
                 if (getUsage() != null)
-                    sender.sendMessage(ConfigUtils.getMsg("usage")
+                    sender.sendMessage(plugin.getMessages().getMessage("usage")
                             .replaceAll("%usage%", getUsage())
                     );
                 return false;
             }
         }
-        sender.sendMessage(ConfigUtils.getMsg("no-perms"));
+        sender.sendMessage(plugin.getMessages().getMessage("no-perms"));
         return false;
     }
 
     public void reloadConfig() {}
+
+    @Override
+    public CelestiaPlugin getPlugin() {
+        return plugin;
+    }
 
     @Override
     public int getMinArgs() {
