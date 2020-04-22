@@ -1,4 +1,4 @@
-package me.nubdotdev.celestia.utils;
+package me.nubdotdev.celestia.core;
 
 import org.bukkit.Bukkit;
 
@@ -8,18 +8,16 @@ public class CelestiaLogger {
 
     private Logger logger = Bukkit.getLogger();
 
-    private final String PREFIX = "[CelestiaCore] ";
-
     public void info(String msg) {
-        logger.info(PREFIX + msg);
+        logger.info(msg);
     }
 
     public void warning(String msg) {
-        logger.warning(PREFIX + msg);
+        logger.warning(msg);
     }
 
     public void severe(String msg) {
-        logger.severe(PREFIX + msg);
+        logger.severe(msg);
     }
 
 }

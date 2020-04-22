@@ -9,14 +9,13 @@ import java.sql.SQLException;
 public abstract class SqlDatabaseHandler {
 
     private CelestiaPlugin plugin;
-    protected Connection connection;
+    private Connection connection;
 
     public SqlDatabaseHandler(CelestiaPlugin plugin) {
         this.plugin = plugin;
-        this.connection = getConnection();
     }
 
-    public abstract Connection getConnection();
+    public abstract void setupConnection();
 
     public void update(String sql) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -40,6 +39,12 @@ public abstract class SqlDatabaseHandler {
 
     public CelestiaPlugin getPlugin() {
         return plugin;
+    }
+
+    public Connection getConnection() {
+        if (connection == null)
+            setupConnection();
+        return connection;
     }
 
 }

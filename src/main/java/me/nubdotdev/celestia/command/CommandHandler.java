@@ -1,6 +1,5 @@
 package me.nubdotdev.celestia.command;
 
-import me.nubdotdev.celestia.CelestiaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
@@ -13,13 +12,11 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public class CommandHandler {
 
-    private CelestiaPlugin plugin;
     private Set<CelestiaCommand> commands = new HashSet<>();
     private SimpleCommandMap commandMap;
     private Map<String, Command> knownCommands;
 
-    public CommandHandler(CelestiaPlugin plugin) {
-        this.plugin = plugin;
+    public CommandHandler() {
         try {
             final Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);
@@ -46,7 +43,7 @@ public class CommandHandler {
             commands.remove(command);
             return true;
         } catch (Exception e) {
-            plugin.getLog().warning("Failed to register command '" + command.getName() + "'");
+            command.getPlugin().getLog().warning("Failed to register command '" + command.getName() + "'");
             e.printStackTrace();
             return false;
         }

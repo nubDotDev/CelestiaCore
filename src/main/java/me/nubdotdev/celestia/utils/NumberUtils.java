@@ -4,13 +4,13 @@ import java.util.Random;
 
 public class NumberUtils {
 
-    public static int intInRange(int lowerInclusive, int upperExclusive) throws IllegalArgumentException {
+    public static int randomIntInRange(int lowerInclusive, int upperExclusive) throws IllegalArgumentException {
         if (lowerInclusive >= upperExclusive)
             throw new IllegalArgumentException("The lower bound must be less than the upper bound");
         return (new Random()).nextInt(upperExclusive - lowerInclusive) + lowerInclusive;
     }
 
-    public static double doubleInRange(double lowerInclusive, double upperExclusive) throws IllegalArgumentException {
+    public static double randomDoubleInRange(double lowerInclusive, double upperExclusive) throws IllegalArgumentException {
         if (lowerInclusive >= upperExclusive)
             throw new IllegalArgumentException("The lower bound must be less than the upper bound");
         return (new Random()).nextDouble() * (upperExclusive - lowerInclusive) + lowerInclusive;

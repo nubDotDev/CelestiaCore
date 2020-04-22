@@ -10,8 +10,6 @@ public class Hook {
 
     public Hook(CelestiaPlugin plugin, String pluginName) {
         this.pluginName = pluginName;
-        if (!isProvided())
-            plugin.getLog().warning(pluginName + " dependency not found");
     }
 
     public boolean isProvided() {

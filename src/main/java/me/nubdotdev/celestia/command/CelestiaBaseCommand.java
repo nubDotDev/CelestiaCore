@@ -76,11 +76,11 @@ public abstract class CelestiaBaseCommand extends CelestiaCommand {
 
     public String buildHelp() {
         StringBuilder helpMsg = new StringBuilder();
-        helpMsg.append(getPlugin().getMessages().getMessage("base-command-help.header") + "\n");
+        helpMsg.append(getPlugin().getMessages().getMessage("base-command-help-header")).append("\n");
         // TODO EXPLAIN PLACEHOLDERS IN CONFIG
         if (subCommands != null) {
             for (CelestiaSubCommand sub : subCommands) {
-                helpMsg.append((getPlugin().getMessages().getMessage("base-command-help.body") + "\n")
+                helpMsg.append((getPlugin().getMessages().getMessage("base-command-help-body") + "\n")
                         .replaceAll("%name%", sub.getName())
                         .replaceAll("%description%", sub.getDescription())
                         .replaceAll("%usage%", sub.getUsage())
@@ -89,7 +89,7 @@ public abstract class CelestiaBaseCommand extends CelestiaCommand {
                 );
             }
         }
-        helpMsg.append(getPlugin().getMessages().getMessage("base-command-help.footer"));
+        helpMsg.append(getPlugin().getMessages().getMessage("base-command-help-footer"));
         return StringUtils.cc(helpMsg.toString())
                 .replaceAll("%title%", getName());
     }

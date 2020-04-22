@@ -10,6 +10,7 @@ import java.sql.SQLException;
 
 public class SqliteDatabaseHandler extends SqlDatabaseHandler {
 
+    private Connection connection;
     private File file;
 
     public SqliteDatabaseHandler(CelestiaPlugin plugin, File file) {
@@ -18,10 +19,11 @@ public class SqliteDatabaseHandler extends SqlDatabaseHandler {
     }
 
     @Override
-    public Connection getConnection() {
+    public void setupConnection() {
         try {
             if (!file.exists())
-                file.createNewFile();
+                if (!file.createNewFile())
+                    return;
             synchronized (this) {
                 if (connection == null || connection.isClosed()) {
                     Class.forName("org.sqlite.JDBC");
@@ -34,7 +36,12 @@ public class SqliteDatabaseHandler extends SqlDatabaseHandler {
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return connection;
     }
 
+    @Override
+    public Connection getConnection() {
+        if (connection == null)
+            setupConnection();
+        return connection;
+    }
 }

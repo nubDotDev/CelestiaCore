@@ -9,7 +9,7 @@ public class WorldEditHook extends Hook {
         super(plugin, "WorldEdit");
     }
 
-    public WorldEditPlugin getWorldEditPlugin() {
+    public WorldEditPlugin getWorldEditPlugin() throws IllegalStateException {
         return (WorldEditPlugin) getPlugin();
     }
 
