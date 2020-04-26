@@ -1,9 +1,9 @@
 package me.nubdotdev.celestia.hook;
 
-import me.nubdotdev.celestia.CelestiaPlugin;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class VaultHook extends Hook {
@@ -12,12 +12,24 @@ public class VaultHook extends Hook {
     private Chat chat;
     private Permission perms;
 
-    public VaultHook(CelestiaPlugin plugin) {
-        super(plugin, "Vault");
+    public VaultHook() {
+        super("Vault");
         if (isProvided()) {
-            setupEconomy();
-            setupChat();
-            setupPermissions();
+            try {
+                setupEconomy();
+            } catch (Exception e) {
+                Bukkit.getLogger().warning("Failed to setup Vault economy");
+            }
+            try {
+                setupChat();
+            } catch (Exception e) {
+                Bukkit.getLogger().warning("Failed to setup Vault chat");
+            }
+            try {
+                setupPermissions();
+            } catch (Exception e) {
+                Bukkit.getLogger().warning("Failed to setup Vault permissions");
+            }
         }
     }
 
@@ -25,7 +37,7 @@ public class VaultHook extends Hook {
         if (getPlugin().getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
-        RegisteredServiceProvider<Economy> rsp = getPlugin().getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
             return false;
         }
@@ -34,13 +46,13 @@ public class VaultHook extends Hook {
     }
 
     private boolean setupChat() {
-        RegisteredServiceProvider<Chat> rsp = getPlugin().getServer().getServicesManager().getRegistration(Chat.class);
+        RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
         chat = rsp.getProvider();
         return chat != null;
     }
 
     private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> rsp = getPlugin().getServer().getServicesManager().getRegistration(Permission.class);
+        RegisteredServiceProvider<Permission> rsp = Bukkit.getServicesManager().getRegistration(Permission.class);
         perms = rsp.getProvider();
         return perms != null;
     }

@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.command;
 
-import me.nubdotdev.celestia.CelestiaPlugin;
+import me.nubdotdev.celestia.CelestiaCore;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -9,32 +9,30 @@ import java.util.List;
 
 public abstract class CelestiaSubCommand implements ICelestiaCommand {
 
-    private CelestiaPlugin plugin;
     private String name, description, usage, permission;
     private List<String> aliases;
     private int minArgs;
     boolean needPlayer;
 
-    protected CelestiaSubCommand(CelestiaPlugin plugin, String name) {
-        this(plugin, name, "", "/", new ArrayList<>());
+    protected CelestiaSubCommand(String name) {
+        this(name, "", "/", new ArrayList<>());
     }
 
-    protected CelestiaSubCommand(CelestiaPlugin plugin, String name, String description, String usage, List<String> aliases) {
-        this.plugin = plugin;
+    protected CelestiaSubCommand(String name, String description, String usage, List<String> aliases) {
         this.name = name;
         this.description = description;
         this.usage = usage;
         this.aliases = aliases;
     }
 
-    protected CelestiaSubCommand(CelestiaPlugin plugin, String name, String description, String usage, List<String> aliases, String permission) {
-        this(plugin, name, description, usage, aliases);
+    protected CelestiaSubCommand(String name, String description, String usage, List<String> aliases, String permission) {
+        this(name, description, usage, aliases);
         this.permission = permission;
     }
 
     public boolean execute(final CommandSender sender, final String[] args) {
         if (needPlayer && !(sender instanceof Player)) {
-            sender.sendMessage(plugin.getMessages().getMessage("not-player"));
+            sender.sendMessage(CelestiaCore.getMessages().getMessage("not-player"));
             return false;
         }
         if (hasPermission(sender)) {
@@ -42,19 +40,14 @@ public abstract class CelestiaSubCommand implements ICelestiaCommand {
                 return true;
             } else {
                 if (getUsage() != null)
-                    sender.sendMessage(plugin.getMessages().getMessage("usage")
+                    sender.sendMessage(CelestiaCore.getMessages().getMessage("usage")
                             .replaceAll("%usage%", getUsage())
                     );
                 return false;
             }
         }
-        sender.sendMessage(plugin.getMessages().getMessage("no-perms"));
+        sender.sendMessage(CelestiaCore.getMessages().getMessage("no-perms"));
         return false;
-    }
-
-    @Override
-    public CelestiaPlugin getPlugin() {
-        return plugin;
     }
 
     public abstract boolean onCommand(final CommandSender sender, final String[] args);

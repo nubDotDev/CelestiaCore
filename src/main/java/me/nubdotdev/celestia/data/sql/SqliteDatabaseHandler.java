@@ -1,6 +1,7 @@
 package me.nubdotdev.celestia.data.sql;
 
-import me.nubdotdev.celestia.CelestiaPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class SqliteDatabaseHandler extends SqlDatabaseHandler {
     private Connection connection;
     private File file;
 
-    public SqliteDatabaseHandler(CelestiaPlugin plugin, File file) {
+    public SqliteDatabaseHandler(File file, Plugin plugin) {
         super(plugin);
         this.file = file;
     }
@@ -31,7 +32,7 @@ public class SqliteDatabaseHandler extends SqlDatabaseHandler {
                 }
             }
         } catch (IOException e) {
-            getPlugin().getLog().warning("Failed to create file '" + file.getName() + "'");
+            Bukkit.getLogger().warning("Failed to create file '" + file.getName() + "'");
             e.printStackTrace();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();

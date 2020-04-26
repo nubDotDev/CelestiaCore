@@ -6,7 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -16,17 +16,17 @@ import java.util.Set;
 
 public class EventManager {
 
-    private JavaPlugin plugin;
     private int channel;
     private EventExecutor executor;
+    private Plugin plugin;
 
     private Set<CelestiaListener> listeners;
 
-    public EventManager(JavaPlugin plugin, int channel) {
-        this.plugin = plugin;
+    public EventManager(int channel, Plugin plugin) {
         this.channel = channel;
         this.executor = (listener, event) -> callEvent(event);
         this.listeners = new HashSet<>();
+        this.plugin = plugin;
     }
 
     @SuppressWarnings("unchecked")
@@ -85,7 +85,7 @@ public class EventManager {
         }
     }
 
-    public JavaPlugin getPlugin() {
+    public Plugin getPlugin() {
         return plugin;
     }
 

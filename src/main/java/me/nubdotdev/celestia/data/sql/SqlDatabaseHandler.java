@@ -1,17 +1,19 @@
 package me.nubdotdev.celestia.data.sql;
 
-import me.nubdotdev.celestia.CelestiaPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
 public abstract class SqlDatabaseHandler {
 
-    private CelestiaPlugin plugin;
     private Connection connection;
+    private Plugin plugin;
 
-    public SqlDatabaseHandler(CelestiaPlugin plugin) {
+    public SqlDatabaseHandler(Plugin plugin) {
         this.plugin = plugin;
     }
 
@@ -20,24 +22,24 @@ public abstract class SqlDatabaseHandler {
     public void update(String sql) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                connection.createStatement().executeUpdate(sql);
+                getConnection().createStatement().executeUpdate(sql);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
     }
 
-    public void query(String sql, ResultSetHandler handler) {
+    public void query(String sql, Consumer<ResultSet> handler) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                handler.handle(connection.createStatement().executeQuery(sql));
+                handler.accept(getConnection().createStatement().executeQuery(sql));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
     }
 
-    public CelestiaPlugin getPlugin() {
+    public Plugin getPlugin() {
         return plugin;
     }
 

@@ -1,7 +1,7 @@
 package me.nubdotdev.celestia.data.sql;
 
-import me.nubdotdev.celestia.CelestiaPlugin;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,18 +13,18 @@ public class MySqlDatabaseHandler extends SqlDatabaseHandler {
     private String host, database, user, password;
     private int port;
 
-    public MySqlDatabaseHandler(CelestiaPlugin plugin, ConfigurationSection dataSection) {
+    public MySqlDatabaseHandler(ConfigurationSection dataSection, Plugin plugin) {
         this(
-                plugin,
                 dataSection.getString("host"),
                 dataSection.getString("database"),
                 dataSection.getString("user"),
                 dataSection.getString("password"),
-                dataSection.getInt("port")
+                dataSection.getInt("port"),
+                plugin
         );
     }
 
-    public MySqlDatabaseHandler(CelestiaPlugin plugin, String host, String database, String user, String password, int port) {
+    public MySqlDatabaseHandler(String host, String database, String user, String password, int port, Plugin plugin) {
         super(plugin);
         this.host = host;
         this.database = database;

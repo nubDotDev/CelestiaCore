@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.addon;
 
-import me.nubdotdev.celestia.CelestiaPlugin;
+import me.nubdotdev.celestia.CelestiaCore;
 import me.nubdotdev.celestia.command.CelestiaCommand;
 
 import java.util.HashSet;
@@ -8,24 +8,22 @@ import java.util.Set;
 
 public abstract class ModuleHandler<T extends Module> {
 
-    private CelestiaPlugin plugin;
     private Set<T> modules;
 
-    protected ModuleHandler(CelestiaPlugin plugin) {
-        this.plugin = plugin;
+    protected ModuleHandler() {
         this.modules = new HashSet<>();
     }
 
     public void registerModule(T module) {
         modules.add(module);
         for (CelestiaCommand command : module.getCommands())
-            plugin.getCommandHandler().register(command);
+            CelestiaCore.getCommandHandler().register(command);
     }
 
     public void unregisterModule(T module) {
         modules.remove(module);
         for (CelestiaCommand command : module.getCommands())
-            plugin.getCommandHandler().unregister(command);
+            CelestiaCore.getCommandHandler().unregister(command);
     }
 
     public void unregisterModules() {

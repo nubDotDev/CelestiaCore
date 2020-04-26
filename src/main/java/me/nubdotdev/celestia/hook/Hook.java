@@ -1,6 +1,5 @@
 package me.nubdotdev.celestia.hook;
 
-import me.nubdotdev.celestia.CelestiaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -8,7 +7,7 @@ public class Hook {
 
     private String pluginName;
 
-    public Hook(CelestiaPlugin plugin, String pluginName) {
+    public Hook(String pluginName) {
         this.pluginName = pluginName;
     }
 

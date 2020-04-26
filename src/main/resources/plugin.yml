@@ -1,4 +1,5 @@
 main: me.nubdotdev.celestia.CelestiaCore
 name: CelestiaCore
 version: 1.0.0
-softdepend: [WorldEdit]
+author: nubDotDev
+softdepend: [Vault, WorldEdit]

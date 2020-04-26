@@ -1,6 +1,5 @@
 package me.nubdotdev.celestia.command;
 
-import me.nubdotdev.celestia.CelestiaPlugin;
 import org.bukkit.command.CommandSender;
 
 public interface ICelestiaCommand {
@@ -15,8 +14,6 @@ public interface ICelestiaCommand {
                 return true;
         return false;
     }
-
-    CelestiaPlugin getPlugin();
 
     String getPermission();
 

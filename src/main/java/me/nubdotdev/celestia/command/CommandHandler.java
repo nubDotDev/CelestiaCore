@@ -43,7 +43,7 @@ public class CommandHandler {
             commands.remove(command);
             return true;
         } catch (Exception e) {
-            command.getPlugin().getLog().warning("Failed to register command '" + command.getName() + "'");
+            Bukkit.getLogger().warning("Failed to register command '" + command.getName() + "'");
             e.printStackTrace();
             return false;
         }
