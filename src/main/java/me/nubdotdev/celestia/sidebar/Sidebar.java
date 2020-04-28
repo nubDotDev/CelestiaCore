@@ -36,7 +36,7 @@ public class Sidebar {
     }
 
     public void update() {
-        if (lines.size() != prevSize && (lines.size() < 15 || prevSize < 15)) {
+        if (lines.size() != prevSize) {
             for (int i = 0; i < 15; i++) {
                 scoreboard.resetScores(ChatColor.values()[i] + "\u00A7r");
                 if (i < lines.size() - scroll)
