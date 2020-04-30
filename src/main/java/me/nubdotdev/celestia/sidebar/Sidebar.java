@@ -3,7 +3,6 @@ package me.nubdotdev.celestia.sidebar;
 import me.nubdotdev.celestia.CelestiaCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -13,7 +12,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Sidebar {
+public abstract class Sidebar {
 
     private String title;
     private long updatePeriod;
@@ -23,7 +22,6 @@ public class Sidebar {
     private Scoreboard scoreboard;
     private Objective objective;
     private BukkitTask updateTask;
-    private List<Player> viewers = new ArrayList<>();
 
     public Sidebar(String title, long updatePeriod) {
         this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -75,16 +73,6 @@ public class Sidebar {
         }).runTaskTimer(CelestiaCore.getInst(), updatePeriod, updatePeriod);
     }
 
-    public void show(Player player) {
-        player.setScoreboard(scoreboard);
-        viewers.add(player);
-    }
-
-    public void hide(Player player) {
-        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-        viewers.remove(player);
-    }
-
     public void scroll(int line) {
         this.scroll = line;
     }
@@ -97,8 +85,8 @@ public class Sidebar {
         return entries;
     }
 
-    public List<Player> getViewers() {
-        return viewers;
+    public Scoreboard getScoreboard() {
+        return scoreboard;
     }
 
 }

@@ -3,6 +3,7 @@ package me.nubdotdev.celestia;
 import me.nubdotdev.celestia.command.CommandHandler;
 import me.nubdotdev.celestia.data.yaml.MessageConfig;
 import me.nubdotdev.celestia.event.listeners.GuiListener;
+import me.nubdotdev.celestia.hook.Hook;
 import me.nubdotdev.celestia.hook.VaultHook;
 import me.nubdotdev.celestia.hook.WorldEditHook;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +16,7 @@ public class CelestiaCore extends JavaPlugin {
 
     private static MessageConfig messages;
 
+    private static final Hook papiHook = new Hook("PlaceholderAPI");
     private static final VaultHook vaultHook = new VaultHook();
     private static final WorldEditHook worldEditHook = new WorldEditHook();
 
@@ -34,6 +36,10 @@ public class CelestiaCore extends JavaPlugin {
 
     public static MessageConfig getMessages() {
         return messages;
+    }
+
+    public static Hook getPapiHook() {
+        return papiHook;
     }
 
     public static VaultHook getVaultHook() {
