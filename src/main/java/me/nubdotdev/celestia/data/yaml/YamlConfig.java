@@ -9,21 +9,15 @@ import java.io.IOException;
 
 public class YamlConfig {
 
-    private File file;
-    private FileConfiguration config;
+    private final File file;
+    private final FileConfiguration config;
+    private final Plugin plugin;
 
     public YamlConfig(File file, Plugin plugin) {
         this.file = file;
         this.config = new YamlConfiguration();
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            plugin.saveResource(file.getName(), false);
-        }
-        try {
-            config.load(file);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.plugin = plugin;
+        reload();
     }
 
     public YamlConfig(String path, Plugin plugin) {
@@ -34,6 +28,19 @@ public class YamlConfig {
         try {
             config.save(file);
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void reload() {
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+            plugin.saveResource(file.getName(), false);
+        }
+        try {
+            config.load(file);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.addon;
 
-import me.nubdotdev.celestia.command.CelestiaCommand;
+import me.nubdotdev.celestia.command.CommandHandler;
 
 import java.util.Collection;
 
@@ -8,6 +8,6 @@ public interface Module {
 
     String getModuleName();
 
-    Collection<CelestiaCommand> getCommands();
+    Collection<CommandHandler> getCommands();
 
 }

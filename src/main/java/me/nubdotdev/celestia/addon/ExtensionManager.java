@@ -1,7 +1,7 @@
 package me.nubdotdev.celestia.addon;
 
 import me.nubdotdev.celestia.CelestiaCore;
-import me.nubdotdev.celestia.command.CelestiaCommand;
+import me.nubdotdev.celestia.command.CommandHandler;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -14,13 +14,13 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-public abstract class ExtensionHandler<T extends Extension> {
+public abstract class ExtensionManager<T extends Extension> {
 
-    private File file;
-    private Class<T> extensionType;
-    private Set<T> extensions;
+    private final File file;
+    private final Class<T> extensionType;
+    private final Set<T> extensions;
 
-    protected ExtensionHandler(File file, Class<T> extensionType) {
+    protected ExtensionManager(File file, Class<T> extensionType) {
         this.file = file;
         this.extensionType = extensionType;
         this.extensions = new HashSet<>();
@@ -47,15 +47,15 @@ public abstract class ExtensionHandler<T extends Extension> {
                             .substring(0, fileName.length() - 6);
                     URLClassLoader registerer = new URLClassLoader(
                             new URL[] { new URL("jar:file:" + file.getPath() + "!/") },
-                            ExtensionHandler.class.getClassLoader()
+                            ExtensionManager.class.getClassLoader()
                     );
                     Class<?> clazz = Class.forName(className, false, registerer);
                     if (extensionType.isAssignableFrom(clazz)) {
                         T extension = ((Class<? extends T>) clazz).newInstance();
                         extension.setPath(file.getPath());
                         extensions.add(extension);
-                        for (CelestiaCommand command : extension.getCommands())
-                            CelestiaCore.getCommandHandler().register(command);
+                        for (CommandHandler command : extension.getCommands())
+                            CelestiaCore.getCommandManager().register(command);
                         Bukkit.getLogger().info("Successfully registered extension '" + extension.getExtensionName() + "'");
                         break;
                     }
@@ -77,8 +77,8 @@ public abstract class ExtensionHandler<T extends Extension> {
 
     public void unregisterExtension(T extension) {
         extensions.remove(extension);
-        for (CelestiaCommand command : extension.getCommands())
-            CelestiaCore.getCommandHandler().unregister(command);
+        for (CommandHandler command : extension.getCommands())
+            CelestiaCore.getCommandManager().unregister(command);
         Bukkit.getLogger().info("Successfully unregistered extension '" + extension.getExtensionName() + "'");
     }
     

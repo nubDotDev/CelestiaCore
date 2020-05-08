@@ -1,56 +1,24 @@
 package me.nubdotdev.celestia.command;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabCompleter;
 
-import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
-@SuppressWarnings("unchecked")
-public class CommandHandler {
+public interface CommandHandler extends CommandExecutor, TabCompleter {
 
-    private Set<CelestiaCommand> commands = new HashSet<>();
-    private SimpleCommandMap commandMap;
-    private Map<String, Command> knownCommands;
+    String getName();
 
-    public CommandHandler() {
-        try {
-            final Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-            commandMapField.setAccessible(true);
-            commandMap = (SimpleCommandMap) commandMapField.get(Bukkit.getServer());
-            final Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
-            knownCommandsField.setAccessible(true);
-            knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    String getDescription();
 
-    public boolean register(CelestiaCommand command) {
-        if (commandMap.register(command.getName(), command)) {
-            commands.add(command);
-            return true;
-        }
-        return false;
-    }
+    String getUsage();
 
-    public boolean unregister(CelestiaCommand command) {
-        try {
-            knownCommands.remove(command.getName());
-            commands.remove(command);
-            return true;
-        } catch (Exception e) {
-            Bukkit.getLogger().warning("Failed to unregister command '" + command.getName() + "'");
-            e.printStackTrace();
-            return false;
-        }
-    }
+    String getPermission();
 
-    public Set<CelestiaCommand> getCommands() {
-        return commands;
-    }
+    List<String> getAliases();
+
+    int getMinArgs();
+
+    boolean isPlayersOnly();
 
 }

@@ -6,6 +6,12 @@ import org.bukkit.World;
 
 public class LocationUtils {
 
+    /**
+     * Serializes a Location into a String: "WORLD_X_Y_Z_PITCH_YAW"
+     *
+     * @param location  location to serialize
+     * @return          serialized Location
+     */
     public static String serializeLocation(Location location) {
         return location.getWorld().getName() + "_" +
                 location.getX() + "_" +
@@ -15,6 +21,13 @@ public class LocationUtils {
                 location.getYaw();
     }
 
+    /**
+     * Deserializes a String into a Location
+     *
+     * @param serialized              String to deserialize
+     * @return                        deserialized Location
+     * @throws NumberFormatException  if any coordinates fail to parse
+     */
     public static Location deserializeLocation(String serialized) throws NumberFormatException {
         String[] args = serialized.split("_");
         World world = Bukkit.getWorld(args[0]);

@@ -1,7 +1,9 @@
 package me.nubdotdev.celestia;
 
-import me.nubdotdev.celestia.command.CommandHandler;
+import me.nubdotdev.celestia.command.CommandManager;
+import me.nubdotdev.celestia.command.commands.CelestiaCoreCommand;
 import me.nubdotdev.celestia.data.yaml.MessageConfig;
+import me.nubdotdev.celestia.event.EventManager;
 import me.nubdotdev.celestia.event.listeners.GuiListener;
 import me.nubdotdev.celestia.hook.Hook;
 import me.nubdotdev.celestia.hook.VaultHook;
@@ -12,7 +14,8 @@ public class CelestiaCore extends JavaPlugin {
 
     private static CelestiaCore inst;
 
-    private static final CommandHandler commandHandler = new CommandHandler();
+    private static CommandManager commandManager;
+    private static EventManager eventManager;
 
     private static MessageConfig messages;
 
@@ -27,11 +30,19 @@ public class CelestiaCore extends JavaPlugin {
 
         messages = new MessageConfig(this);
 
-        getServer().getPluginManager().registerEvents(new GuiListener(), this);
+        eventManager = new EventManager(this);
+        eventManager.registerEvents(new GuiListener());
+
+        commandManager = new CommandManager(this);
+        commandManager.register(new CelestiaCoreCommand(this));
     }
 
-    public static CommandHandler getCommandHandler() {
-        return commandHandler;
+    public static CommandManager getCommandManager() {
+        return commandManager;
+    }
+
+    public static EventManager getEventManager() {
+        return eventManager;
     }
 
     public static MessageConfig getMessages() {

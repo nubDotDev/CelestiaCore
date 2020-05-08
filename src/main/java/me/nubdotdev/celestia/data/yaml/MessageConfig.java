@@ -8,20 +8,20 @@ import java.util.Map;
 
 public class MessageConfig extends YamlConfig {
 
-    private Map<String, String> messages = new HashMap<>();
+    private Map<String, String> messages;
 
     public MessageConfig(Plugin plugin) {
         super("/messages.yml", plugin);
-        readMessages();
+        reloadMessages();
     }
 
     public void reload() {
-        save();
-        readMessages();
+        super.reload();
+        reloadMessages();
     }
 
-    public void readMessages() {
-        messages.clear();
+    public void reloadMessages() {
+        messages = new HashMap<>();
         if (getConfig() == null)
             return;
         for (Map.Entry<String, Object> entry : getConfig().getValues(false).entrySet()) {

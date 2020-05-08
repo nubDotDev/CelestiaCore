@@ -10,10 +10,11 @@ import java.util.Objects;
 
 public class YamlDatabase {
 
-    private File file;
-    private List<YamlConfig> configs = new ArrayList<>();
-    private Plugin plugin;
+    private final File file;
+    private final List<YamlConfig> configs = new ArrayList<>();
+    private final Plugin plugin;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public YamlDatabase(File file, Plugin plugin) {
         this.file = file;
         this.plugin = plugin;

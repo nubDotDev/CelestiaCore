@@ -8,12 +8,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
-public abstract class SqlDatabaseHandler {
+public abstract class SqlDatabaseManager {
 
     private Connection connection;
-    private Plugin plugin;
+    private final Plugin plugin;
 
-    public SqlDatabaseHandler(Plugin plugin) {
+    public SqlDatabaseManager(Plugin plugin) {
         this.plugin = plugin;
     }
 
@@ -37,10 +37,6 @@ public abstract class SqlDatabaseHandler {
                 e.printStackTrace();
             }
         });
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
     }
 
     public Connection getConnection() {

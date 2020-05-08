@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableList;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Team;
 
+/**
+ * Represents one line of a {@link Sidebar}
+ */
 public class SidebarEntry {
 
     private static final ImmutableList<String> RESET = ImmutableList.of(
@@ -17,8 +20,14 @@ public class SidebarEntry {
             "\u00A7k", "\u00A7l", "\u00A7m", "\u00A7n", "\u00A7o"
     );
 
-    private Team team;
+    private final Team team;
 
+    /**
+     * Creates a new entry for a {@link Sidebar}
+     *
+     * @param team  used for its prefix and suffix to set text without flickering
+     * @param line  index of the entry in its {@link Sidebar}
+     */
     public SidebarEntry(Team team, int line) {
         this.team = team;
         team.addEntry(ChatColor.values()[line] + "\u00A7r");
@@ -26,6 +35,12 @@ public class SidebarEntry {
         team.setSuffix("");
     }
 
+    /**
+     * Sets the text of the entry using its team's prefix and suffix<br>
+     * Special cases with color codes are checked for so they are not lost when switching from the prefix to the suffix
+     *
+     * @param text  text to be displayed on the {@link Sidebar}
+     */
     public void setText(String text) {
         if (text.length() <= 16) {
             team.setPrefix(text);

@@ -1,159 +1,65 @@
 package me.nubdotdev.celestia.command;
 
 import me.nubdotdev.celestia.CelestiaCore;
-import me.nubdotdev.celestia.utils.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
+import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
-public abstract class CelestiaCommand extends Command implements ICelestiaCommand {
+public class CelestiaCommand extends Command implements PluginIdentifiableCommand {
 
-    private int minArgs;
-    private boolean requiresPlayer;
-    private String help;
-    private List<CelestiaSubCommand> subCommands = new ArrayList<>();
+    private final int minArgs;
+    private final boolean playersOnly;
+    private final CommandHandler handler;
+    private final Plugin plugin;
 
-    protected CelestiaCommand(String name, String description, String usage, List<String> aliases) {
-        super(name, description, usage, aliases);
-    }
-
-    protected CelestiaCommand(String name, String description, String usage, List<String> aliases, String permission) {
-        this(name, description, usage, aliases);
-        setPermission(permission);
+    @SuppressWarnings("unchecked")
+    public CelestiaCommand(CommandHandler handler, Plugin plugin) {
+        super(
+                Objects.requireNonNull(handler.getName()),
+                (String) ObjectUtils.defaultIfNull(handler.getDescription(), ""),
+                (String) ObjectUtils.defaultIfNull(handler.getUsage(), "/" + handler.getName()),
+                (List<String>) ObjectUtils.defaultIfNull(handler.getAliases(), Collections.emptyList())
+        );
+        setPermission(handler.getPermission());
+        this.minArgs = handler.getMinArgs();
+        this.playersOnly = handler.isPlayersOnly();
+        this.handler = handler;
+        this.plugin = plugin;
     }
 
     @Override
-    public boolean execute(final CommandSender sender, final String label, final String[] args) {
-        if (requiresPlayer() && !(sender instanceof Player)) {
+    public boolean execute(CommandSender sender, String label, String[] args) {
+        if (playersOnly && !(sender instanceof Player)) {
             sender.sendMessage(CelestiaCore.getMessages().getMessage("not-player"));
-            return false;
-        }
-        if (!hasPermission(sender)) {
+        } else if (getPermission() != null && !sender.hasPermission(getPermission())) {
             sender.sendMessage(CelestiaCore.getMessages().getMessage("no-perms"));
-            return false;
-        }
-        if (subCommands.size() > 0) {
-            if (args.length == 0 || args[0].equalsIgnoreCase("help") || args[0].equals("?")) {
-                if (help != null)
-                    sender.sendMessage(help.replaceAll("%label%", label));
-                else
-                    sender.sendMessage(CelestiaCore.getMessages().getMessage("usage")
-                            .replaceAll("%usage%", getUsage())
-                    );
-                return false;
-            }
-            for (CelestiaSubCommand sub : subCommands)
-                if (args[0].equalsIgnoreCase(sub.getName()) || StringUtils.containsIgnoreCase(sub.getAliases(), args[0]))
-                    return sub.execute(sender, label, Arrays.copyOfRange(args, 1, args.length));
-        } else if (args.length >= minArgs && onCommand(sender, args)) {
+        } else if (args.length < minArgs || !handler.onCommand(sender, this, label, args)) {
+            sender.sendMessage(CelestiaCore.getMessages().getMessage("usage")
+                    .replaceAll("%usage%", getUsage())
+                    .replaceAll("%label%", label)
+            );
+        } else {
             return true;
         }
-        sender.sendMessage(CelestiaCore.getMessages().getMessage("usage")
-                .replaceAll("%usage%", getUsage())
-        );
         return false;
     }
 
     @Override
-    public List<String> tabComplete(final CommandSender sender, final String alias, final String[] args) throws IllegalArgumentException {
-        if (args.length != 1 || subCommands.size() == 0)
-            return super.tabComplete(sender, alias, args);
-        List<String> completions = new ArrayList<>();
-        for (CelestiaSubCommand sub : subCommands)
-            if (StringUtil.startsWithIgnoreCase(sub.getName(), args[0]) || StringUtils.containsIgnoreCase(sub.getAliases(), args[0]))
-                completions.add(sub.getName());
-        return completions;
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        List<String> completions = handler.onTabComplete(sender, this, alias, args);
+        return completions == null ? super.tabComplete(sender, alias, args) : completions;
     }
 
     @Override
-    public boolean onCommand(final CommandSender sender, final String[] args) {
-        return false;
-    }
-
-    @Override
-    public String buildHelp() {
-        StringBuilder helpMsg = new StringBuilder();
-        helpMsg.append(CelestiaCore.getMessages().getMessage("base-command-help-header")).append("\n");
-        if (subCommands != null) {
-            for (CelestiaSubCommand sub : subCommands) {
-                helpMsg.append((CelestiaCore.getMessages().getMessage("base-command-help-body") + "\n")
-                        .replaceAll("%name%", sub.getName())
-                        .replaceAll("%description%", sub.getDescription())
-                        .replaceAll("%usage%", sub.getUsage())
-                        .replaceAll("%aliases%", String.join(", ", sub.getAliases()))
-                        .replaceAll("%permission%", getPermission())
-                );
-            }
-        }
-        helpMsg.append(CelestiaCore.getMessages().getMessage("base-command-help-footer"));
-        return StringUtils.cc(helpMsg.toString())
-                .replaceAll("%title%", getName());
-    }
-
-    @Override
-    public String getHelp() {
-        return help;
-    }
-
-    @Override
-    public void setHelp(String help) {
-        this.help = help;
-    }
-
-    @Override
-    public List<CelestiaSubCommand> getSubCommands() {
-        return subCommands;
-    }
-
-    @Override
-    public void addSubCommand(CelestiaSubCommand subCommand) {
-        if (subCommand != null) {
-            subCommands.add(subCommand);
-            subCommand.setUsage(getUsage() + " " + subCommand.getUsage());
-            this.help = buildHelp();
-        }
-    }
-
-    @Override
-    public void removeSubCommand(CelestiaSubCommand subCommand) {
-        if (subCommand != null) {
-            subCommands.remove(subCommand);
-            this.help = buildHelp();
-        }
-    }
-
-    @Override
-    public int getMinArgs() {
-        return minArgs;
-    }
-
-    @Override
-    public void setMinArgs(int minArgs) {
-        this.minArgs = minArgs;
-    }
-
-    @Override
-    public boolean requiresPlayer() {
-        return requiresPlayer;
-    }
-
-    @Override
-    public void setRequiresPlayer(boolean requiresPlayer) {
-        this.requiresPlayer = requiresPlayer;
-    }
-
-
-    private static Set<CelestiaCommand> instances = new HashSet<>();
-
-    public static Set<CelestiaCommand> getInstances() {
-        return instances;
-    }
-
-    public static void addInstance(CelestiaCommand command) {
-        instances.add(command);
+    public Plugin getPlugin() {
+        return plugin;
     }
 
 }

@@ -1,34 +1,42 @@
 package me.nubdotdev.celestia.gui;
 
-import me.nubdotdev.celestia.gui.button.GuiRangeButton;
-import org.bukkit.Bukkit;
+import me.nubdotdev.celestia.gui.button.GuiButton;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public abstract class Gui {
+public class Gui {
 
-    private String name;
-    private List<GuiPage> pages = new ArrayList<>();
-    private int page;
-    private List<Player> viewers = new ArrayList<>();
+    private final static Map<Player, Gui> instances = new HashMap<>();
+
+    private final String name;
+    private final Map<Player, Integer> viewers = new HashMap<>();
+    private final List<GuiPage> pages = new ArrayList<>();
 
     public Gui(String name) {
         this.name = name;
     }
 
-    public void open(Player player) {
-        player.openInventory(pages.get(page).getInventory());
-        if (!viewers.contains(player))
-            viewers.add(player);
+    public void open(Player player, int page) {
+        if (page < pages.size() && page >= 0) {
+            pages.get(page).open(player);
+            viewers.put(player, page);
+        }
+        instances.put(player, this);
     }
 
-    public void addButtons(List<GuiRangeButton> buttons, GuiPage template) {
-        while (buttons.size() > 0) {
-            GuiPage page = new GuiPage(template, this);
-            page.addButtonsToRange(buttons);
-            pages.add(page);
+    public void open(Player player) {
+        open(player, 0);
+    }
+
+    public void addButtons(int[] buttonRange, List<GuiButton> buttons, GuiPage template) {
+        while (!buttons.isEmpty()) {
+            GuiPage page = new GuiPage(template);
+            page.addButtonsToRange(buttonRange, buttons);
+            addPage(page);
         }
     }
 
@@ -36,23 +44,38 @@ public abstract class Gui {
         return name;
     }
 
+    public Map<Player, Integer> getViewers() {
+        return viewers;
+    }
+
     public List<GuiPage> getPages() {
         return pages;
     }
 
-    public int getCurrentPage() {
-        return page;
+    public void addPage(int index, GuiPage page) {
+        pages.add(index, page);
+        page.setPlaceholders(index, pages.size());
+        for (int i = 0; i < pages.size(); i++)
+            pages.get(i).setPlaceholders(i + 1, pages.size());
     }
 
-    public void setPage(int page) {
-        this.page = page;
-        for (Player p : getViewers())
-            p.openInventory(pages.get(page).getInventory());
+    public void addPage(GuiPage page) {
+        addPage(pages.size(), page);
     }
 
-    public List<Player> getViewers() {
-        viewers.removeIf(player -> !Bukkit.getOnlinePlayers().contains(player));
-        return viewers;
+    public void removePage(int index) {
+        pages.remove(index);
+        for (int i = 0; i < pages.size(); i++)
+            pages.get(i).setPlaceholders(i + 1, pages.size());
+    }
+
+    public void removePage(GuiPage page) {
+        if (pages.contains(page))
+            removePage(pages.indexOf(page));
+    }
+
+    public static Map<Player, Gui> getInstances() {
+        return instances;
     }
 
 }

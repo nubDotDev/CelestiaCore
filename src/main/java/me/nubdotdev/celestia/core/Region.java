@@ -12,26 +12,44 @@ import java.util.Map;
 public class Region implements YamlSerializable {
 
     private World world;
-    private Location pos1, pos2;
+    private Location pos1, pos2, min, max;
 
+    /**
+     * Creates a new region in a specified world
+     *
+     * @param world  world in which the region is contained
+     */
     public Region(World world) {
         this.world = world;
     }
 
+    /**
+     * Creates a new region in a specified world between two locations
+     *
+     * @param world  world in which the region is contained
+     * @param pos1   first bound of the region
+     * @param pos2   second bound of the region
+     */
     public Region(World world, Location pos1, Location pos2) {
         this.world = world;
-        this.pos1 = pos1;
-        this.pos2 = pos2;
-        order();
+        this.pos1 = pos1.getWorld() == world ? pos1 : null;
+        this.pos2 = pos2.getWorld() == world ? pos2 : null;
+        updateExtremes();
     }
 
+    /**
+     * Used for YAML serialization
+     */
     public Region(Map<String, Object> serialized) {
         this.world = Bukkit.getWorld((String) serialized.get("world"));
         this.pos1 = LocationUtils.deserializeLocation((String) serialized.get("position-1"));
         this.pos2 = LocationUtils.deserializeLocation((String) serialized.get("position-2"));
-        order();
+        updateExtremes();
     }
 
+    /**
+     * Used for YAML serialization
+     */
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> serialized = new HashMap<>();
@@ -40,31 +58,35 @@ public class Region implements YamlSerializable {
         serialized.put("position-2", LocationUtils.serializeLocation(pos2));
         return serialized;
     }
-    
+
+    /**
+     * Checks if a location is inside of the region
+     *
+     * @param location  location to check if its inside the region
+     * @return          true if the location is inside the region
+     */
     public boolean isInside(Location location) {
         if (location.getWorld() == world) {
-            return pos1 == null || pos2 == null || (
-                    location.getX() > pos1.getX() && location.getX() < pos2.getX() &&
-                    location.getY() > pos1.getY() && location.getY() < pos2.getY() &&
-                    location.getZ() > pos1.getZ() && location.getZ() < pos2.getZ()
+            return min == null || max == null || (
+                    location.getX() > min.getX() && location.getX() < max.getX() &&
+                    location.getY() > min.getY() && location.getY() < max.getY() &&
+                    location.getZ() > min.getZ() && location.getZ() < max.getZ()
             );
         }
         return false;
     }
 
-    private void order() {
-        Location min = new Location(
+    private void updateExtremes() {
+        min = new Location(
                 pos1.getWorld(), Math.min(pos1.getBlockX(), pos2.getBlockX()),
                 Math.min(pos1.getBlockY(), pos2.getBlockY()),
                 Math.min(pos1.getBlockZ(), pos2.getBlockZ())
         );
-        Location max = new Location(
+        max = new Location(
                 pos1.getWorld(), Math.max(pos1.getBlockX(), pos2.getBlockX()),
                 Math.max(pos1.getBlockY(), pos2.getBlockY()),
                 Math.max(pos1.getBlockZ(), pos2.getBlockZ())
         );
-        pos1 = min;
-        pos2 = max;
     }
 
     public World getWorld() {
@@ -73,6 +95,12 @@ public class Region implements YamlSerializable {
 
     public void setWorld(World world) {
         this.world = world;
+        if (pos1.getWorld() != world || pos2.getWorld() != world) {
+            pos1 = null;
+            pos2 = null;
+            min = null;
+            max = null;
+        }
     }
 
     public Location getPos1() {
@@ -80,8 +108,10 @@ public class Region implements YamlSerializable {
     }
 
     public void setPos1(Location loc) {
-        if (loc.getWorld() == pos1.getWorld())
+        if (loc.getWorld() == world) {
             pos1 = loc;
+            updateExtremes();
+        }
     }
 
     public Location getPos2() {
@@ -89,8 +119,18 @@ public class Region implements YamlSerializable {
     }
 
     public void setPos2(Location loc) {
-        if (loc.getWorld() == pos2.getWorld())
+        if (loc.getWorld() == world){
             pos2 = loc;
+            updateExtremes();
+        }
+    }
+
+    public Location getMin() {
+        return min;
+    }
+
+    public Location getMax() {
+        return max;
     }
 
 }

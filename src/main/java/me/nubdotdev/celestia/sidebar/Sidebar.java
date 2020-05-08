@@ -12,15 +12,19 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a scoreboard whose display slot is the sidebar<br>
+ * Up to 15 lines can be displayed at once, but there can be more lines if scrolling is used
+ */
 public abstract class Sidebar {
 
     private String title;
     private long updatePeriod;
     private int prevSize, scroll;
-    private List<String> lines = new ArrayList<>();
-    private SidebarEntry[] entries = new SidebarEntry[15];
-    private Scoreboard scoreboard;
-    private Objective objective;
+    private final List<String> lines = new ArrayList<>();
+    private final SidebarEntry[] entries = new SidebarEntry[15];
+    private final Scoreboard scoreboard;
+    private final Objective objective;
     private BukkitTask updateTask;
 
     public Sidebar(String title, long updatePeriod) {
@@ -33,6 +37,9 @@ public abstract class Sidebar {
             entries[i] = new SidebarEntry(scoreboard.registerNewTeam(i + ""), i);
     }
 
+    /**
+     * Updates the lines and the length thereof in the sidebar
+     */
     public void update() {
         if (lines.size() != prevSize) {
             for (int i = 0; i < 15; i++) {
@@ -61,6 +68,11 @@ public abstract class Sidebar {
         return updatePeriod;
     }
 
+    /**
+     * Sets the update period and restarts the update runnable
+     *
+     * @param updatePeriod  number of ticks between each call of {@link #update()}
+     */
     public void setUpdatePeriod(long updatePeriod) {
         this.updatePeriod = updatePeriod;
         if (updateTask != null)
@@ -73,8 +85,13 @@ public abstract class Sidebar {
         }).runTaskTimer(CelestiaCore.getInst(), updatePeriod, updatePeriod);
     }
 
-    public void scroll(int line) {
-        this.scroll = line;
+    /**
+     * Scrolls the sidebar down to a line such that all lines above it are no longer visible
+     *
+     * @param scroll  the line which will become the new top line (0 being the first)
+     */
+    public void setScroll(int scroll) {
+        this.scroll = scroll;
     }
 
     public List<String> getLines() {

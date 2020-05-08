@@ -9,12 +9,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class SqliteDatabaseHandler extends SqlDatabaseHandler {
+public class SqliteDatabaseManager extends SqlDatabaseManager {
 
     private Connection connection;
-    private File file;
+    private final File file;
 
-    public SqliteDatabaseHandler(File file, Plugin plugin) {
+    public SqliteDatabaseManager(File file, Plugin plugin) {
         super(plugin);
         this.file = file;
     }

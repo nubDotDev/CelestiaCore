@@ -2,94 +2,70 @@ package me.nubdotdev.celestia.event;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class EventManager {
 
-    private int channel;
-    private EventExecutor executor;
-    private Plugin plugin;
+    private final Map<Listener, Map<Class<? extends Event>, Set<Method>>> listeners = new HashMap<>();
+    private final EventExecutor executor = (listener, event) -> callEvent(event);
+    private final Plugin plugin;
 
-    private Set<CelestiaListener> listeners;
-
-    public EventManager(int channel, Plugin plugin) {
-        this.channel = channel;
-        this.executor = (listener, event) -> callEvent(event);
-        this.listeners = new HashSet<>();
+    public EventManager(Plugin plugin) {
         this.plugin = plugin;
     }
 
     @SuppressWarnings("unchecked")
     public void registerEvents(Listener listener) {
-        CelestiaListener gameListener = new CelestiaListener(listener);
+        Map<Class<? extends Event>, Set<Method>> handlers = new HashMap<>();
         for (Method m : listener.getClass().getMethods()) {
-            CelestiaEventHandler handler = m.getAnnotation(CelestiaEventHandler.class);
-            if (handler == null || handler.channel() != channel)
+            EventHandler handler = m.getAnnotation(EventHandler.class);
+            if (handler == null)
                 continue;
             Parameter[] params = m.getParameters();
             if (params.length != 1 || !Event.class.isAssignableFrom(params[0].getType()))
                 continue;
             Class<? extends Event> event = (Class<? extends Event>) params[0].getType();
-            EventPriority priority;
-            boolean ignoreCancelled;
-            try {
-                priority = handler.priority();
-                ignoreCancelled = handler.ignoreCancelled();
-            } catch (Exception e) {
-                priority = EventPriority.NORMAL;
-                ignoreCancelled = false;
-                e.printStackTrace();
-            }
             Bukkit.getPluginManager().registerEvent(
-                    event, listener, priority, executor, plugin, ignoreCancelled
+                    event, listener, handler.priority(), executor, plugin, handler.ignoreCancelled()
             );
-            gameListener.getHandlers().put(m, event);
+            handlers.putIfAbsent(event, new HashSet<>());
+            handlers.get(event).add(m);
         }
-        Bukkit.getPluginManager().registerEvents(listener, plugin);
-        listeners.add(gameListener);
+        listeners.put(listener, handlers);
     }
 
     public void unregisterEvents(Listener listener) {
-        HandlerList.unregisterAll(listener);
-        for (CelestiaListener gameListener : listeners) {
-            if (gameListener.getListener() == listener) {
-                listeners.remove(gameListener);
-                break;
-            }
-        }
+        listeners.remove(listener);
     }
 
     public <T extends Event> void callEvent(T event) {
         Class<? extends Event> eventClazz = event.getClass();
-        for (CelestiaListener listener : getListeners()) {
-            for (Map.Entry<Method, Class<? extends Event>> entry : listener.getHandlers().entrySet()) {
-                if (entry.getValue() == eventClazz) {
-                    Method method = entry.getKey();
-                    try {
-                        method.invoke(listener.getListener());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+        for (Map.Entry<Listener, Map<Class<? extends Event>, Set<Method>>> handlers : listeners.entrySet())
+            if (handlers.getValue().containsKey(eventClazz))
+                for (Method m : handlers.getValue().get(eventClazz))
+                    invokeHandlerMethod(m, handlers.getKey(), event);
+    }
+
+    public <T extends Event> void invokeHandlerMethod(Method handlerMethod, Listener listener, T event) {
+        try {
+            handlerMethod.invoke(listener, event);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
-    public Plugin getPlugin() {
-        return plugin;
-    }
-
-    public Set<CelestiaListener> getListeners() {
+    public Map<Listener, Map<Class<? extends Event>, Set<Method>>> getListeners() {
         return listeners;
     }
 

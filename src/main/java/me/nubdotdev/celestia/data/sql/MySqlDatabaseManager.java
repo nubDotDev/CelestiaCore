@@ -7,13 +7,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class MySqlDatabaseHandler extends SqlDatabaseHandler {
+public class MySqlDatabaseManager extends SqlDatabaseManager {
 
     private Connection connection;
-    private String host, database, user, password;
-    private int port;
+    private final String host, database, user, password;
+    private final int port;
 
-    public MySqlDatabaseHandler(ConfigurationSection dataSection, Plugin plugin) {
+    public MySqlDatabaseManager(ConfigurationSection dataSection, Plugin plugin) {
         this(
                 dataSection.getString("host"),
                 dataSection.getString("database"),
@@ -24,7 +24,7 @@ public class MySqlDatabaseHandler extends SqlDatabaseHandler {
         );
     }
 
-    public MySqlDatabaseHandler(String host, String database, String user, String password, int port, Plugin plugin) {
+    public MySqlDatabaseManager(String host, String database, String user, String password, int port, Plugin plugin) {
         super(plugin);
         this.host = host;
         this.database = database;

@@ -1,6 +1,6 @@
 package me.nubdotdev.celestia.addon;
 
-import me.nubdotdev.celestia.command.CelestiaCommand;
+import me.nubdotdev.celestia.command.CommandHandler;
 
 import java.util.Collection;
 
@@ -8,7 +8,7 @@ public interface Extension {
 
     String getExtensionName();
 
-    Collection<CelestiaCommand> getCommands();
+    Collection<CommandHandler> getCommands();
 
     String getPath();
 
