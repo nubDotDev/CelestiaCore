@@ -32,23 +32,23 @@ public class CommandManager {
         this.plugin = plugin;
     }
 
-    public boolean register(CommandHandler command) {
+    public void register(CommandHandler command) {
         CelestiaCommand cmd = new CelestiaCommand(command, plugin);
-        if (commandMap.register(command.getName(), cmd)) {
-            commands.add(command);
-            return true;
+        if (!commandMap.register(command.getName(), cmd)) {
+            Bukkit.getLogger().warning("Failed to register command '" + command.getName() + "'");
+            return;
         }
-        return false;
+        commands.add(command);
+
     }
 
-    public boolean unregister(CommandHandler command) {
+    public void unregister(CommandHandler command) {
         try {
             knownCommands.remove(command.getName());
             commands.remove(command);
-            return true;
         } catch (Exception e) {
+            Bukkit.getLogger().warning("Failed to unregister command '" + command.getName() + "'");
             e.printStackTrace();
-            return false;
         }
     }
 

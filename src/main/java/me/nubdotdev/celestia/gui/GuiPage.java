@@ -1,6 +1,5 @@
 package me.nubdotdev.celestia.gui;
 
-import me.nubdotdev.celestia.gui.button.GuiButton;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -13,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a page in a {@link Gui}
+ */
 public class GuiPage implements InventoryHolder {
 
     private String name;
@@ -23,6 +25,12 @@ public class GuiPage implements InventoryHolder {
     private final List<Player> viewers = new ArrayList<>();
     private Inventory inventory;
 
+    /**
+     * Creates a new GUI page with a specified name and {@link InventoryType}
+     *
+     * @param name  name of GUI page
+     * @param type  invetory type
+     */
     public GuiPage(String name, InventoryType type) {
         this.name = name;
         this.type = type;
@@ -30,6 +38,12 @@ public class GuiPage implements InventoryHolder {
         createInventory();
     }
 
+    /**
+     * Creates a new GUI page with a specified name and size
+     *
+     * @param name  name of GUI page
+     * @param size  invetory size
+     */
     public GuiPage(String name, int size) {
         this.name = name;
         this.size = size;
@@ -37,6 +51,9 @@ public class GuiPage implements InventoryHolder {
         createInventory();
     }
 
+    /**
+     * Copy constructor
+     */
     public GuiPage(GuiPage page) {
         this.name = page.name;
         this.type = page.type;
@@ -46,15 +63,24 @@ public class GuiPage implements InventoryHolder {
         this.inventory = page.inventory;
     }
 
+    /**
+     * Opens GUI page to a player
+     *
+     * @param player  player to whom to show the GUI page
+     */
     public void open(Player player) {
         player.openInventory(getInventory());
         viewers.add(player);
     }
 
-    public String getName() {
-        return name;
-    }
-
+    /**
+     * Translates all placeholders in the title of the {@link Inventory}<br>
+     * '%page%' - page number<br>
+     * '%pages' - number of pages
+     *
+     * @param page   page number
+     * @param pages  number of pages
+     */
     public void setPlaceholders(int page, int pages) {
         if (name.contains("%page%") || name.contains("%pages%")) {
             createInventory(name
@@ -62,6 +88,10 @@ public class GuiPage implements InventoryHolder {
                     .replaceAll("%pages%", pages + "")
             );
         }
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
@@ -98,16 +128,24 @@ public class GuiPage implements InventoryHolder {
         inventory.setItem(slot, button.getItem());
     }
 
-    public void addButtonsToRange(int[] buttonRange, List<GuiButton> buttonList) {
+    /**
+     * Adds buttons to a specified range
+     *
+     * @param buttonRange  slots to which to add buttons
+     * @param buttons      buttons to add
+     * @return             list of buttons that were not added
+     */
+    public List<GuiButton> addButtonsToRange(int[] buttonRange, List<GuiButton> buttons) {
+        List<GuiButton> buttons1 = new ArrayList<>(buttons);
         for (int i : buttonRange) {
-            if (buttonList.isEmpty())
+            if (buttons1.isEmpty())
                 break;
-            if (i >= size || buttons.containsKey(i))
+            if (i >= size || this.buttons.containsKey(i))
                 continue;
-            GuiButton button = buttonList.get(0);
-            setButton(i, button);
-            buttonList.remove(0);
+            setButton(i, buttons1.get(0));
+            buttons1.remove(0);
         }
+        return buttons1;
     }
 
     public void removeButton(int slot) {

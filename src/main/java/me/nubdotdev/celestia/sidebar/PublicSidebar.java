@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A sidebar which can be viewed by multiple players
+ * Represents a sidebar which can be viewed by multiple players
  */
 public class PublicSidebar extends Sidebar {
 

@@ -1,14 +1,21 @@
 package me.nubdotdev.celestia.core;
 
+import com.sk89q.worldedit.bukkit.selections.Selection;
+import me.nubdotdev.celestia.CelestiaCore;
 import me.nubdotdev.celestia.data.yaml.YamlSerializable;
+import me.nubdotdev.celestia.hook.WorldEditHook;
 import me.nubdotdev.celestia.utils.LocationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a region spanning an entire world or a cuboid region between two locations
+ */
 public class Region implements YamlSerializable {
 
     private World world;
@@ -35,6 +42,26 @@ public class Region implements YamlSerializable {
         this.pos1 = pos1.getWorld() == world ? pos1 : null;
         this.pos2 = pos2.getWorld() == world ? pos2 : null;
         updateExtremes();
+    }
+
+    /**
+     * Creates a new region in the current world of a specified player and, if available, their {@link Selection}
+     *
+     * @param player  player whose world and {@link Selection} to use
+     */
+    public Region(Player player) {
+        WorldEditHook worldEdit = CelestiaCore.getWorldEditHook();
+        this.world = player.getWorld();
+        if (worldEdit.isProvided()) {
+            Selection selection = worldEdit.getWorldEditPlugin().getSelection(player);
+            if (selection != null) {
+                this.pos1 = selection.getMinimumPoint();
+                this.pos2 = selection.getMaximumPoint();
+                return;
+            }
+        }
+        this.pos1 = null;
+        this.pos2 = null;
     }
 
     /**
@@ -110,7 +137,8 @@ public class Region implements YamlSerializable {
     public void setPos1(Location loc) {
         if (loc.getWorld() == world) {
             pos1 = loc;
-            updateExtremes();
+            if (pos2 != null)
+                updateExtremes();
         }
     }
 
@@ -121,7 +149,8 @@ public class Region implements YamlSerializable {
     public void setPos2(Location loc) {
         if (loc.getWorld() == world){
             pos2 = loc;
-            updateExtremes();
+            if (pos1 != null)
+                updateExtremes();
         }
     }
 

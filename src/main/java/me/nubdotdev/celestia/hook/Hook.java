@@ -3,6 +3,9 @@ package me.nubdotdev.celestia.hook;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Represents a hook into another plugin
+ */
 public class Hook {
 
     private final String pluginName;

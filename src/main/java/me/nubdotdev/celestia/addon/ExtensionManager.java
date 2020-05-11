@@ -1,7 +1,5 @@
 package me.nubdotdev.celestia.addon;
 
-import me.nubdotdev.celestia.CelestiaCore;
-import me.nubdotdev.celestia.command.CommandHandler;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -54,8 +52,6 @@ public abstract class ExtensionManager<T extends Extension> {
                         T extension = ((Class<? extends T>) clazz).newInstance();
                         extension.setPath(file.getPath());
                         extensions.add(extension);
-                        for (CommandHandler command : extension.getCommands())
-                            CelestiaCore.getCommandManager().register(command);
                         Bukkit.getLogger().info("Successfully registered extension '" + extension.getExtensionName() + "'");
                         break;
                     }
@@ -77,8 +73,6 @@ public abstract class ExtensionManager<T extends Extension> {
 
     public void unregisterExtension(T extension) {
         extensions.remove(extension);
-        for (CommandHandler command : extension.getCommands())
-            CelestiaCore.getCommandManager().unregister(command);
         Bukkit.getLogger().info("Successfully unregistered extension '" + extension.getExtensionName() + "'");
     }
     

@@ -60,7 +60,7 @@ public class StringUtils {
     }
 
     /**
-     * Creates a help message for a {@link BaseCommand} based off its sub-commands
+     * Creates a help message for a {@link BaseCommand} based on its sub-commands
      *
      * @param command  base command whose information to use
      * @return         help message

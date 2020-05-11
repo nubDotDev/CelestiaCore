@@ -1,6 +1,5 @@
 package me.nubdotdev.celestia.command;
 
-import me.nubdotdev.celestia.CelestiaCore;
 import me.nubdotdev.celestia.utils.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -32,14 +31,11 @@ public abstract class BaseCommand extends SimpleCommand {
                 for (SimpleCommand sub : subCommands)
                     if (args[0].equalsIgnoreCase(sub.getName()) || StringUtils.containsIgnoreCase(sub.getAliases(), args[0]))
                         return sub.onCommand(sender, cmd, label, args);
-        if (getUsage() == null)
+        if (getUsage() == null) {
             sender.sendMessage(StringUtils.buildHelp(this).replaceAll("%label%", label));
-        else
-            sender.sendMessage(CelestiaCore.getMessages().getMessage("usage")
-                    .replaceAll("%usage%", getUsage())
-                    .replaceAll("%label%", label)
-            );
-        return true;
+            return true;
+        }
+        return false;
     }
 
     @Override
