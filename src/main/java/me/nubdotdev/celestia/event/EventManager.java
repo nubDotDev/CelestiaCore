@@ -49,10 +49,10 @@ public class EventManager {
     }
 
     public <T extends Event> void callEvent(T event) {
-        Class<? extends Event> eventClazz = event.getClass();
+        Class<? extends Event> eventClass = event.getClass();
         for (Map.Entry<Listener, Map<Class<? extends Event>, Set<Method>>> handlers : listeners.entrySet())
-            if (handlers.getValue().containsKey(eventClazz))
-                for (Method m : handlers.getValue().get(eventClazz))
+            if (handlers.getValue().containsKey(eventClass))
+                for (Method m : handlers.getValue().get(eventClass))
                     invokeHandlerMethod(m, handlers.getKey(), event);
     }
 

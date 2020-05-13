@@ -7,10 +7,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a page in a {@link Gui}
@@ -18,11 +15,11 @@ import java.util.Map;
 public class GuiPage implements InventoryHolder {
 
     private String name;
-    private InventoryType type;
     private int size;
-    private final Map<Integer, GuiButton> buttons;
+    private InventoryType type;
     private ItemStack filler;
-    private final List<Player> viewers = new ArrayList<>();
+    private final Set<Player> viewers = new HashSet<>();
+    private final Map<Integer, GuiButton> buttons;
     private Inventory inventory;
 
     /**
@@ -191,7 +188,7 @@ public class GuiPage implements InventoryHolder {
         createInventory(name);
     }
 
-    public List<Player> getViewers() {
+    public Set<Player> getViewers() {
         return viewers;
     }
 

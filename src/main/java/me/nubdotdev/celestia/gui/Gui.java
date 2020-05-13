@@ -14,6 +14,10 @@ public class Gui {
 
     private final static Map<Player, Gui> instances = new HashMap<>();
 
+    public static Map<Player, Gui> getInstances() {
+        return instances;
+    }
+
     private final String name;
     private final Map<Player, Integer> viewers = new HashMap<>();
     private final List<GuiPage> pages = new ArrayList<>();
@@ -99,10 +103,6 @@ public class Gui {
     public void removePage(GuiPage page) {
         if (pages.contains(page))
             removePage(pages.indexOf(page));
-    }
-
-    public static Map<Player, Gui> getInstances() {
-        return instances;
     }
 
 }

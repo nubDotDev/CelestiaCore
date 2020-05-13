@@ -23,10 +23,11 @@ public abstract class Sidebar {
     private int prevSize, scroll;
     private final List<String> lines = new ArrayList<>();
     private final SidebarEntry[] entries = new SidebarEntry[15];
-    private final Scoreboard scoreboard;
     private final Objective objective;
+    private final Scoreboard scoreboard;
     private BukkitTask updateTask;
 
+    @SuppressWarnings("deprecation")
     public Sidebar(String title, long updatePeriod) {
         this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         this.objective = scoreboard.registerNewObjective("objective", "dummy");
@@ -82,7 +83,7 @@ public abstract class Sidebar {
             public void run() {
                 update();
             }
-        }).runTaskTimer(CelestiaCore.getInst(), updatePeriod, updatePeriod);
+        }).runTaskTimer(CelestiaCore.getInst(), 0, updatePeriod);
     }
 
     /**

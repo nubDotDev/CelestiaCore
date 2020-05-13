@@ -67,12 +67,12 @@ public class StringUtils {
      */
     public static String buildHelp(BaseCommand command) {
         StringBuilder helpMsg = new StringBuilder();
-        helpMsg.append(CelestiaCore.getMessages().getMessage("command-help-header")
+        helpMsg.append(CelestiaCore.getMessages().getMessage("base-command-help-header")
                 .replaceAll("%name%", command.getName())
         ).append("\n");
         if (command.getSubCommands() != null) {
             for (SimpleCommand sub : command.getSubCommands()) {
-                helpMsg.append((CelestiaCore.getMessages().getMessage("command-help-body") + "\n")
+                helpMsg.append((CelestiaCore.getMessages().getMessage("base-command-help-body") + "\n")
                         .replaceAll("%name%", sub.getName())
                         .replaceAll("%description%", sub.getDescription())
                         .replaceAll("%usage%", sub.getUsage())
@@ -81,7 +81,7 @@ public class StringUtils {
                 );
             }
         }
-        helpMsg.append(CelestiaCore.getMessages().getMessage("command-help-footer")
+        helpMsg.append(CelestiaCore.getMessages().getMessage("base-command-help-footer")
                 .replaceAll("%name%", command.getName())
         );
         return StringUtils.cc(helpMsg.toString());

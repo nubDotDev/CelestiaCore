@@ -3,15 +3,15 @@ package me.nubdotdev.celestia.sidebar;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents a sidebar which can be viewed by multiple players
  */
 public class PublicSidebar extends Sidebar {
 
-    private final List<Player> viewers = new ArrayList<>();
+    private final Set<Player> viewers = new HashSet<>();
 
     /**
      * Creates a new public sidebar with a specified title and update period
@@ -43,7 +43,7 @@ public class PublicSidebar extends Sidebar {
         viewers.remove(player);
     }
 
-    public List<Player> getViewers() {
+    public Set<Player> getViewers() {
         return viewers;
     }
 
